@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { CreateUserDto, UpdateUserDto } from './users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './users.entity';

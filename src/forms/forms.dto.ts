@@ -1,40 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import exp from 'constants';
 
-export class SwitchFormDto {
-  @ApiProperty()
-  names: string[];
-
-  @ApiProperty()
-  date: string;
-
-  @ApiProperty()
-  day: string;
-
-  @ApiProperty()
-  systemCondition: SystemConditionDto;
-
-  @ApiProperty()
-  filesCapacity: FilesCapacityDto;
-
-  @ApiProperty()
-  reports: ReportsDto;
-}
-
-export class DataFormDto {
-  @ApiPropertyOptional()
-  name?: string;
-
-  @ApiPropertyOptional()
-  email?: string;
-
-  @ApiPropertyOptional()
-  role?: string;
-
-  @ApiPropertyOptional()
-  code?: string;
-}
-
 export class SystemConditionDto {
   @ApiProperty()
   CP: boolean;
@@ -97,7 +63,7 @@ export class SystemConditionDto {
   tempreture: number;
 
   @ApiProperty()
-  humidity: boolean;
+  humidity: number;
 }
 
 export class FilesCapacityDto {
@@ -118,15 +84,79 @@ export class FilesCapacityDto {
 }
 
 export class ReportsDto {
-    @ApiProperty()
-    text: string;
-  
-    @ApiProperty()
-    RCVTrafficFile: boolean;
-  
-    @ApiProperty()
-    ProcessTrafficFile: boolean;
-  
-    @ApiProperty()
-    RCVChargingFile: boolean;
-  }
+  @ApiProperty()
+  text: string;
+
+  @ApiProperty()
+  RCVTrafficFile: boolean;
+
+  @ApiProperty()
+  ProcessTrafficFile: boolean;
+
+  @ApiProperty()
+  RCVChargingFile: boolean;
+}
+
+export class CreateSwitchFormDto {
+  @ApiProperty()
+  names: string[];
+
+  @ApiProperty()
+  date: string;
+
+  @ApiProperty()
+  day: string;
+
+  @ApiProperty()
+  systemCondition: SystemConditionDto;
+
+  @ApiProperty()
+  filesCapacity: FilesCapacityDto;
+
+  @ApiProperty()
+  reports: ReportsDto;
+}
+
+export class UpdateSwitchFormDto {
+  @ApiProperty()
+  names: string[];
+
+  @ApiProperty()
+  date: string;
+
+  @ApiProperty()
+  day: string;
+
+  @ApiProperty()
+  systemCondition: SystemConditionDto;
+
+  @ApiProperty()
+  filesCapacity: FilesCapacityDto;
+
+  @ApiProperty()
+  reports: ReportsDto;
+}
+
+export class GetFormByIdDto {
+  @ApiProperty()
+  formId: string
+}
+
+export class DeleteFormByIdDto {
+  @ApiProperty()
+  formId: string
+}
+
+export class CreateDataFormDto {
+  @ApiPropertyOptional()
+  name?: string;
+
+  @ApiPropertyOptional()
+  email?: string;
+
+  @ApiPropertyOptional()
+  role?: string;
+
+  @ApiPropertyOptional()
+  code?: string;
+}
