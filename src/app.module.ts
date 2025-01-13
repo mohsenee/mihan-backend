@@ -15,7 +15,6 @@ import { CreateSwitchFormDto } from './forms/forms.dto';
       port: 27017,
       database: 'mihan-db',
       synchronize: true,
-      useUnifiedTopology: true,
       entities: [
         'dist/**/*.entity{.ts,.js}',
         'dist/**/entities/*.entity{.ts,.js}',

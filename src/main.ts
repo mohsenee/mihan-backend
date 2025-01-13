@@ -17,11 +17,11 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document); // Swagger UI will be available at /api
 
   app.enableCors({
-    origin: 'http://localhost:8080', // Replace with your frontend URL
+    origin: 'http://localhost:3000', // Replace with your frontend URL
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, Authorization'
   });
 
-  await app.listen(3000);
+  await app.listen(8000);
 }
 bootstrap();

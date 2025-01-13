@@ -13,10 +13,14 @@ export class CreateUserDto {
   @ApiPropertyOptional()
   code: string;
 
+  @ApiPropertyOptional()
+  phoneNumber: string;
+
+  @ApiPropertyOptional()
+  password: string;
 }
 
 export class UpdateUserDto {
-  
   @ApiPropertyOptional()
   name?: string;
 
@@ -30,12 +34,25 @@ export class UpdateUserDto {
   code?: string;
 }
 
-export class GetUserById {
+export class GetUserByIdDto {
   @ApiProperty()
-  userId: string
+  userId: string;
 }
 
-export class DeleteUserById {
+export class GetUserByCodeAndPass {
   @ApiProperty()
-  userId: string
+  code: string;
+
+  @ApiProperty()
+  password: string;
+}
+
+export class GetUserByCodeDto {
+  @ApiProperty()
+  code: string;
+}
+
+export class DeleteUserByIdDto {
+  @ApiProperty()
+  userId: string;
 }

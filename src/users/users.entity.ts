@@ -20,4 +20,12 @@ export class UserEntity extends baseEntity {
     @Column()
     code: string;
 
+    @ApiPropertyOptional()
+    @Column()
+    phoneNumber: string;
+
+    @ApiPropertyOptional()
+    @Column()
+    password: string;
+
 }

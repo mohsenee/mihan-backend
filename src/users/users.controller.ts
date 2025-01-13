@@ -1,6 +1,13 @@
 import { Controller, Get, Post, Param, Body, Query, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, DeleteUserById, GetUserById, UpdateUserDto } from './users.dto';
+import {
+  CreateUserDto,
+  DeleteUserByIdDto,
+  GetUserByCodeAndPass,
+  GetUserByCodeDto,
+  GetUserByIdDto,
+  UpdateUserDto,
+} from './users.dto';
 
 @Controller('users')
 export class UsersController {
@@ -12,12 +19,22 @@ export class UsersController {
   }
 
   @Get('getUserById')
-  getUserById( @Query() dto: GetUserById,) {
+  getUserById(@Query() dto: GetUserByIdDto) {
     return this.usersService.getUserById(dto.userId);
   }
 
+  @Get('getUserByCodeAndPass')
+  getUserByCodeAndPass(@Query() dto: GetUserByCodeAndPass) {
+    return this.usersService.getUserByCodeAndPass(dto);
+  }
+
+  @Get('getUserByCode')
+  getUserByCode(@Query() dto: GetUserByCodeDto) {
+    return this.usersService.getUserByCode(dto);
+  }
+
   @Get('deleteUserById')
-  deleteUserById( @Query() dto: DeleteUserById,) {
+  deleteUserById(@Query() dto: DeleteUserByIdDto) {
     return this.usersService.deleteUserById(dto.userId);
   }
 
@@ -27,7 +44,7 @@ export class UsersController {
   }
 
   @Put('updateUser/:id')
-  updateUser( @Param('id') id: string,@Body() body: UpdateUserDto) {
+  updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
     return this.usersService.updateUser(id, body);
   }
 }
