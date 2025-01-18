@@ -6,6 +6,7 @@ import {
   GetUserByCodeAndPass,
   GetUserByCodeDto,
   GetUserByIdDto,
+  GetUserByRoleDto,
   UpdateUserDto,
 } from './users.dto';
 
@@ -36,6 +37,11 @@ export class UsersController {
   @Get('deleteUserById')
   deleteUserById(@Query() dto: DeleteUserByIdDto) {
     return this.usersService.deleteUserById(dto.userId);
+  }
+
+  @Get('getUserByRole')
+  getUserByRole(@Query() dto: GetUserByRoleDto) {
+    return this.usersService.getUserByRole(dto);
   }
 
   @Post('createUser')

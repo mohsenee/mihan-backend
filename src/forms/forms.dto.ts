@@ -102,19 +102,67 @@ export class CreateSwitchFormDto {
   names: string[];
 
   @ApiProperty()
-  date: string;
+  reportDate: string;
 
   @ApiProperty()
   day: string;
 
   @ApiProperty()
-  systemCondition: SystemConditionDto;
+  bandwidth: string;
 
   @ApiProperty()
-  filesCapacity: FilesCapacityDto;
+  data_status: boolean;
 
   @ApiProperty()
-  reports: ReportsDto;
+  log_review: boolean;
+
+  @ApiProperty()
+  network_traffic: boolean;
+
+  @ApiProperty()
+  sensor_status: boolean;
+
+  @ApiProperty()
+  switch_status: boolean;
+
+  @ApiProperty()
+  RCVTrafficFile: boolean;
+
+  @ApiProperty()
+  ProcessTrafficFile: boolean;
+
+  @ApiProperty()
+  RCVChargingFile: boolean;
+
+  @ApiProperty()
+  comments: string;
+
+  @ApiProperty()
+  hf_archive: string;
+
+  @ApiProperty()
+  humidity: string;
+
+  @ApiProperty()
+  sg_oper: string;
+
+  @ApiProperty()
+  temperature: string;
+
+  @ApiProperty()
+  tm_mnt_pcm: string;
+
+  @ApiProperty()
+  tm_mnt_port: string;
+
+  // @ApiProperty()
+  // systemCondition: SystemConditionDto;
+
+  // @ApiProperty()
+  // filesCapacity: FilesCapacityDto;
+
+  // @ApiProperty()
+  // reports: ReportsDto;
 }
 
 export class UpdateSwitchFormDto {
@@ -139,12 +187,12 @@ export class UpdateSwitchFormDto {
 
 export class GetFormByIdDto {
   @ApiProperty()
-  formId: string
+  formId: string;
 }
 
 export class DeleteFormByIdDto {
   @ApiProperty()
-  formId: string
+  formId: string;
 }
 
 export class CreateDataFormDto {

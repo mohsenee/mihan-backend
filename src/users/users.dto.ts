@@ -56,3 +56,8 @@ export class DeleteUserByIdDto {
   @ApiProperty()
   userId: string;
 }
+
+export class GetUserByRoleDto {
+  @ApiProperty()
+  role: string;
+}

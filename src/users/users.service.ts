@@ -4,6 +4,7 @@ import {
   GetUserByCodeDto,
   GetUserByCodeAndPass,
   UpdateUserDto,
+  GetUserByRoleDto,
 } from './users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './users.entity';
@@ -77,6 +78,23 @@ export class UsersService {
       } else return true;
     } catch (error) {
       console.error('Error in getUserById:', error.message);
+      throw error; // Re-throw the error to handle it at a higher level
+    }
+  }
+
+  async getUserByRole(dto: GetUserByRoleDto) {
+    try {
+      const users = await this.userEntityRepository.find({
+        where: {
+          role: dto.role,
+        },
+      });
+
+      if (!users) {
+        return [];
+      } else return users.map(p => p.name);
+    } catch (error) {
+      console.error('Error in getUserByRole:', error.message);
       throw error; // Re-throw the error to handle it at a higher level
     }
   }
