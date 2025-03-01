@@ -5,10 +5,13 @@ import {
   GetUserByCodeAndPass,
   UpdateUserDto,
   GetUserByRoleDto,
+  GetUserByIdDto,
 } from './users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './users.entity';
 import { MongoRepository } from 'typeorm';
+import { ObjectId } from 'mongodb';
+import * as bcrypt from 'bcrypt';
 const mongoose = require('mongoose');
 
 @Injectable()
@@ -22,15 +25,15 @@ export class UsersService {
     return await this.userEntityRepository.find({});
   }
 
-  async getUserById(id: string) {
+  async getUserById(dto: GetUserByIdDto) {
     try {
-      if (!mongoose.Types.ObjectId.isValid(id)) {
+      if (!mongoose.Types.ObjectId.isValid(dto.userId)) {
         throw new Error('Invalid ID format');
       }
 
       const user = await this.userEntityRepository.findOne({
         where: {
-          _id: new mongoose.Types.ObjectId(id),
+          _id: new ObjectId(dto.userId),
         },
       });
 
@@ -82,6 +85,23 @@ export class UsersService {
     }
   }
 
+  async findUserByCode(dto: GetUserByCodeDto) {
+    try {
+      const user = await this.userEntityRepository.findOne({
+        where: {
+          code: dto.code,
+        },
+      });
+
+      if (!user) {
+        return false;
+      } else return user;
+    } catch (error) {
+      console.error('Error in getUserById:', error.message);
+      throw error; // Re-throw the error to handle it at a higher level
+    }
+  }
+
   async getUserByRole(dto: GetUserByRoleDto) {
     try {
       const users = await this.userEntityRepository.find({
@@ -92,7 +112,7 @@ export class UsersService {
 
       if (!users) {
         return [];
-      } else return users.map(p => p.name);
+      } else return users.map((p) => p.name);
     } catch (error) {
       console.error('Error in getUserByRole:', error.message);
       throw error; // Re-throw the error to handle it at a higher level
@@ -100,7 +120,7 @@ export class UsersService {
   }
 
   async createUser(user: CreateUserDto) {
-    return await this.userEntityRepository.save(user); // Save it to the database
+    return await this.userEntityRepository.save(user);
   }
 
   async deleteUserById(id: string) {

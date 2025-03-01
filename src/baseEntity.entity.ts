@@ -1,19 +1,7 @@
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, ObjectIdColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
 
-// export class baseEntity {
-//     @ApiProperty()
-//     @ObjectIdColumn()
-//     id: any;
-//     @Column()
-//     @ApiProperty()
-//     createdAt: Date;
-//     @ApiProperty()
-//     @UpdateDateColumn({ nullable: true })
-//     updateAt: Date;
-// }
-
-export class baseEntity {
+export class BaseEntity {
     @ObjectIdColumn()
     id: any;
   

@@ -9,6 +9,7 @@ import {
   GetUserByRoleDto,
   UpdateUserDto,
 } from './users.dto';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('users')
 export class UsersController {
@@ -21,7 +22,7 @@ export class UsersController {
 
   @Get('getUserById')
   getUserById(@Query() dto: GetUserByIdDto) {
-    return this.usersService.getUserById(dto.userId);
+    return this.usersService.getUserById(dto);
   }
 
   @Get('getUserByCodeAndPass')

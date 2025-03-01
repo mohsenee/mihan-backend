@@ -1,7 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSwitchFormDto, UpdateSwitchFormDto } from './forms.dto';
+import { ObjectId } from 'mongodb';
+import {
+  CreateFormDto,
+  DeleteFormByIdDto,
+  GetFormByIdDto,
+  GetFormsByRoleDto,
+  GetFormsByRoleResultDto,
+  UpdateFormByIdDto,
+  getBandwidthDto,
+  getTempretureHumidityDto,
+} from './forms.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SwitchFormEntity } from './forms.entity';
+import {
+  MuxFormEntity,
+  SwitchFormEntity,
+  FacilitiesFormEntity,
+  FiberFormEntity,
+  PowerFormEntity,
+} from './forms.entity';
 import { MongoRepository } from 'typeorm';
 const mongoose = require('mongoose');
 
@@ -10,75 +26,199 @@ export class FormsService {
   constructor(
     @InjectRepository(SwitchFormEntity)
     private switchFormEntityRepository: MongoRepository<SwitchFormEntity>,
+    @InjectRepository(MuxFormEntity)
+    private muxFormEntityRepository: MongoRepository<MuxFormEntity>,
+    @InjectRepository(FacilitiesFormEntity)
+    private facilitiesFormEntityRepository: MongoRepository<FacilitiesFormEntity>,
+    @InjectRepository(FiberFormEntity)
+    private fiberFormEntityRepository: MongoRepository<FiberFormEntity>,
+    @InjectRepository(PowerFormEntity)
+    private powerFormEntityRepository: MongoRepository<PowerFormEntity>,
   ) {}
+
+  private getRepository(role: string) {
+    const repoMap = {
+      Switch: this.switchFormEntityRepository,
+      Mux: this.muxFormEntityRepository,
+      Fiber: this.fiberFormEntityRepository,
+      Facilities: this.facilitiesFormEntityRepository,
+      Power: this.powerFormEntityRepository,
+    };
+
+    if (!repoMap[role]) {
+      throw new Error(`Invalid role: ${role}`);
+    }
+
+    return repoMap[role];
+  }
 
   async getAllFormSwitch() {
     return await this.switchFormEntityRepository.find({});
   }
 
-  async getSwitchFormById(id: string) {
+  async getFormById(dto: GetFormByIdDto) {
+    console.log(`getFormsById called: ${dto.formId}`);
     try {
-      if (!mongoose.Types.ObjectId.isValid(id)) {
+      if (!mongoose.Types.ObjectId.isValid(dto.formId)) {
         throw new Error('Invalid ID format');
       }
 
-      const form = await this.switchFormEntityRepository.findOne({
-        where: {
-          _id: new mongoose.Types.ObjectId(id),
-        },
+      const repository = this.getRepository(dto.role);
+      const form = await repository.findOne({
+        where: { _id: new ObjectId(dto.formId) },
       });
 
       if (!form) {
-        throw new Error('User not found');
+        throw new Error('Form not found');
       }
 
       return form;
     } catch (error) {
-      console.error('Error in getSwitchFormById:', error.message);
+      console.error('Error in getFormById:', error.message);
       throw error; // Re-throw the error to handle it at a higher level
     }
   }
 
-  async createSwithForm(form: CreateSwitchFormDto) {
-    return await this.switchFormEntityRepository.save(form); // Save it to the database
-  }
-
-  async deleteSwitchFormById(id: string) {
+  async updateFormById(id: string, dto: UpdateFormByIdDto) {
+    console.log(`updateFormById called: ${dto.formId}`);
     try {
-      if (!mongoose.Types.ObjectId.isValid(id)) {
+      if (!mongoose.Types.ObjectId.isValid(dto.formId)) {
         throw new Error('Invalid ID format');
       }
 
-      await this.switchFormEntityRepository.deleteOne({
-        where: {
-          _id: new mongoose.Types.ObjectId(id),
-        },
+      const repository = this.getRepository(dto.role);
+      let existingForm = await repository.findOne({
+        where: { _id: new ObjectId(dto.formId) },
       });
+
+      if (!existingForm) {
+        throw new Error(`${dto.role} Form not found`);
+      }
+
+      const updatedForm = { ...existingForm, ...dto.form };
+      return await repository.save(updatedForm);
     } catch (error) {
-      console.error('Error in deleteSwitchFormById:', error.message);
+      console.error('Error in getFormById:', error.message);
       throw error; // Re-throw the error to handle it at a higher level
     }
   }
 
-  async updateSwitchForm(
-    id: string,
-    updateSwitchFormDto: UpdateSwitchFormDto,
-  ): Promise<SwitchFormEntity> {
-    // Find the user by ID
-    const existingForm = await this.switchFormEntityRepository.findOne({
+  async deleteFormById(dto: DeleteFormByIdDto) {
+    console.log(`deleteFormById called: ${dto.formId}`);
+    try {
+      if (!mongoose.Types.ObjectId.isValid(dto.formId)) {
+        throw new Error('Invalid ID format');
+      }
+
+      const repository = this.getRepository(dto.role);
+      return await repository.deleteOne({ _id: new ObjectId(dto.formId) });
+    } catch (error) {
+      console.error('Error in getFormById:', error.message);
+      throw error; // Re-throw the error to handle it at a higher level
+    }
+  }
+
+  async getTemperatureHumidityForLastMonth(): Promise<
+    getTempretureHumidityDto[]
+  > {
+    const today = new Date();
+    const startOfLastMonth = new Date(today);
+    startOfLastMonth.setDate(today.getDate() - 30); // Subtract 30 days
+    startOfLastMonth.setHours(0, 0, 0, 0); // Set to the start of the day (00:00:00)
+
+    // Get the end of today (23:59:59)
+    const endOfLastMonth = new Date(today);
+    endOfLastMonth.setHours(23, 59, 59, 999);
+
+    // Fetch the forms from the database using the createdAt field for filtering
+    const forms = await this.switchFormEntityRepository.find({
       where: {
-        _id: new mongoose.Types.ObjectId(id),
+        createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth }, // Filter based on createdAt field
       },
     });
 
-    if (!existingForm) {
-      throw new Error('SwitchForm not found');
-    }
+    // Map the forms to extract only the required fields (temperature, humidity, and reportDate)
+    const temperatureHumidityData: getTempretureHumidityDto[] = forms.map(
+      (form) => {
+        return {
+          temperature: Number(form.temperature) || null,
+          humidity: Number(form.humidity) || null,
+          reportDate: form.reportDate,
+          day: form.day,
+        };
+      },
+    );
 
-    // Merge the existing user with new data
-    const updatedForm = { ...existingForm, ...updateSwitchFormDto };
+    console.log(temperatureHumidityData);
 
-    // Save the updated user back to the database
-    return await this.switchFormEntityRepository.save(updatedForm);
+    return temperatureHumidityData;
   }
+
+  async getBandwidthForLastMonth(): Promise<getBandwidthDto[]> {
+    const today = new Date();
+    const startOfLastMonth = new Date(today);
+    startOfLastMonth.setDate(today.getDate() - 30); // Subtract 30 days
+    startOfLastMonth.setHours(0, 0, 0, 0); // Set to the start of the day (00:00:00)
+
+    // Get the end of today (23:59:59)
+    const endOfLastMonth = new Date(today);
+    endOfLastMonth.setHours(23, 59, 59, 999);
+
+    // Fetch the forms from the database using the createdAt field for filtering
+    const forms = await this.switchFormEntityRepository.find({
+      where: {
+        createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth }, // Filter based on createdAt field
+      },
+    });
+
+    // Map the forms to extract only the required fields (temperature, humidity, and reportDate)
+    const bandwidthData: getBandwidthDto[] = forms.map((form) => {
+      return {
+        bandwidth: Number(form.bandwidth) || null,
+        reportDate: form.reportDate,
+        day: form.day,
+      };
+    });
+
+    return bandwidthData;
+  }
+
+  async getFormsByRole(dto: GetFormsByRoleDto) {
+    console.log(`getFormsByRole called: ${dto.role}`);
+    try {
+        const repository = this.getRepository(dto.role);
+        if (!repository) {
+            throw new Error(`Invalid role: ${dto.role}`);
+        }
+
+        const forms = await repository.find({ where: {} });
+
+        if (!forms || forms.length === 0) {
+            console.log('No reports found');
+            return [];
+        }
+
+        const results: GetFormsByRoleResultDto[] = forms.map(f => ({
+            id: f.id,
+            reportDate: f.reportDate
+        }));
+
+        console.log(results);
+        return results;
+    } catch (error) {
+        console.error('Error in getFormsByRole:', error.message);
+        throw error;
+    }
+}
+
+async createForm(dto: CreateFormDto) {
+  console.log(`createForm called: ${dto.role}`);
+  const repository = this.getRepository(dto.role);
+  if (!repository) {
+    throw new Error(`Invalid role: ${dto.role}`);
+  }
+  
+  return await repository.save(dto.form);
+}
+
 }
