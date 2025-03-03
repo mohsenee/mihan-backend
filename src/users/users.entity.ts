@@ -18,6 +18,10 @@ export class UserEntity extends BaseEntity {
 
     @ApiPropertyOptional()
     @Column()
+    access: number;
+
+    @ApiPropertyOptional()
+    @Column()
     code: string;
 
     @ApiPropertyOptional()

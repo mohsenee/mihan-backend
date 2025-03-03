@@ -26,7 +26,8 @@ export class AuthService {
     const payload: JwtPayload = {
       userId: user.id,
       username: user.name,
-      role: user.role
+      role: user.role,
+      access: user.access
     };
 
     return {
@@ -40,7 +41,7 @@ export class AuthService {
       ...userDto,
       password: hashedPassword,
     });
-    return user;
+    return await this.login(user);
   }
 
 }

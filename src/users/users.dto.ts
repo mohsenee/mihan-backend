@@ -12,6 +12,9 @@ export class CreateUserDto {
   role: string;
 
   @ApiPropertyOptional()
+  access: number;
+
+  @ApiPropertyOptional()
   code: string;
 
   @ApiPropertyOptional()
@@ -62,4 +65,3 @@ export class GetUserByRoleDto {
   @ApiProperty()
   role: string;
 }
-
