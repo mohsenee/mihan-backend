@@ -25,6 +25,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('getUserData')
   getUserData(@Request() req) {
-    return {userId: req.user.userId, userName: req.user.userName, role: req.user.role, access: req.access};
+    return {userId: req.user.userId, userName: req.user.userName, role: req.user.role, access: req.user.access};
   }
 }

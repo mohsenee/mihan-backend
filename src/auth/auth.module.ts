@@ -6,8 +6,6 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersController } from 'src/users/users.controller';
-import { FormsController } from 'src/forms/forms.controller';
 import { FormsModule } from 'src/forms/forms.module';
 
 @Module({
