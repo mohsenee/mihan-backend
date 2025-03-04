@@ -697,6 +697,14 @@ export class GetFormsByRoleDto {
   role: string;
 }
 
+export class GetFormsByRoleAndDateDto {
+  @ApiProperty()
+  role: string;
+
+  @ApiProperty()
+  reportDate: string;
+}
+
 export class GetFormsByRoleResultDto {
   @ApiProperty()
   id: string;

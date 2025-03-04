@@ -18,6 +18,7 @@ import {
   GetFormsByRoleDto,
   UpdateFormByIdDto,
   CreateFormDto,
+  GetFormsByRoleAndDateDto,
 } from './forms.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
@@ -68,6 +69,11 @@ export class FormsController {
       `User ${req.user.userId} ${req.user.userName} requested forms for role: ${req.user.role}`,
     );
     return this.formsService.getFormsByRole(dto);
+  }
+
+  @Get('getFormsByRoleAndDate')
+  getFormsByRoleAndDate(@Query() dto: GetFormsByRoleAndDateDto) {
+    return this.formsService.getFormsByRoleAndDate(dto);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -4,6 +4,7 @@ import {
   CreateFormDto,
   DeleteFormByIdDto,
   GetFormByIdDto,
+  GetFormsByRoleAndDateDto,
   GetFormsByRoleDto,
   GetFormsByRoleResultDto,
   UpdateFormByIdDto,
@@ -81,13 +82,13 @@ export class FormsService {
     if (!repository) {
       throw new Error(`Invalid role: ${dto.role}`);
     }
-  
+
     const form = await repository.create({
       ...dto.form,
       version: 1,
       isExpired: false,
     });
-    
+
     return await repository.save(form);
   }
 
@@ -131,7 +132,10 @@ export class FormsService {
       }
 
       const repository = this.getRepository(dto.role);
-      const form =  await repository.findOne({ _id: new ObjectId(dto.formId), isExpired: false });
+      const form = await repository.findOne({
+        _id: new ObjectId(dto.formId),
+        isExpired: false,
+      });
       if (form) {
         form.isExpired = true;
         form.updatedBy = dto.updatedBy;
@@ -211,30 +215,48 @@ export class FormsService {
   async getFormsByRole(dto: GetFormsByRoleDto) {
     console.log(`getFormsByRole called: ${dto.role}`);
     try {
+      const repository = this.getRepository(dto.role);
+      if (!repository) {
+        throw new Error(`Invalid role: ${dto.role}`);
+      }
+
+      const forms = await repository.find({ where: { isExpired: false } });
+
+      if (!forms || forms.length === 0) {
+        console.log('No reports found');
+        return [];
+      }
+
+      const results: GetFormsByRoleResultDto[] = forms.map((f) => ({
+        id: f.id,
+        reportDate: f.reportDate,
+      }));
+
+      console.log(results);
+      return results;
+    } catch (error) {
+      console.error('Error in getFormsByRole:', error.message);
+      throw error;
+    }
+  }
+
+  async getFormsByRoleAndDate(dto: GetFormsByRoleAndDateDto) {
+    console.log(`getFormsByRoleAndDate called: ${dto.role} ${dto.reportDate}`);
+    try {
         const repository = this.getRepository(dto.role);
         if (!repository) {
             throw new Error(`Invalid role: ${dto.role}`);
         }
 
-        const forms = await repository.find({ where: {isExpired: false} });
+        const forms = await repository.find({ where: {isExpired: false, reportDate: dto.reportDate} });
 
         if (!forms || forms.length === 0) {
             console.log('No reports found');
-            return [];
-        }
-
-        const results: GetFormsByRoleResultDto[] = forms.map(f => ({
-            id: f.id,
-            reportDate: f.reportDate
-        }));
-
-        console.log(results);
-        return results;
+            return false;
+        }else return true
     } catch (error) {
         console.error('Error in getFormsByRole:', error.message);
         throw error;
     }
 }
-
-
 }
