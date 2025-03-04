@@ -437,7 +437,7 @@ export class PowerTable6Dto {
 
 }
 
-export class SwitchFormDto {
+export class baseFormDto{
   @ApiProperty()
   names: string[];
 
@@ -449,6 +449,21 @@ export class SwitchFormDto {
 
   @ApiProperty()
   comments: string;
+
+  @ApiProperty()
+  version: number;
+
+  @ApiProperty()
+  isExpired: boolean;
+
+  @ApiProperty()
+  createdBy: string;
+
+  @ApiProperty()
+  updatedBy: string;
+}
+
+export class SwitchFormDto extends baseFormDto {
 
   @ApiProperty()
   bandwidth: string;
@@ -496,18 +511,7 @@ export class SwitchFormDto {
   tm_mnt_port: string;
 }
 
-export class MuxFormDto {
-  @ApiProperty()
-  names: string[];
-
-  @ApiProperty()
-  reportDate: string;
-
-  @ApiProperty()
-  day: string;
-
-  @ApiProperty()
-  comments: string;
+export class MuxFormDto extends baseFormDto {
 
   @ApiProperty()
   dailyReportChecking: string;
@@ -556,35 +560,13 @@ export class MuxFormDto {
 
 }
 
-export class FacilitiesFormDto {
-  @ApiProperty()
-  names: string[];
-
-  @ApiProperty()
-  reportDate: string;
-
-  @ApiProperty()
-  day: string;
-
-  @ApiProperty()
-  comments: string;
+export class FacilitiesFormDto extends baseFormDto {
 
   @ApiProperty()
   reports: FacilitiesReportsDto[];
 }
 
-export class FiberFormDto {
-  @ApiProperty()
-  names: string[];
-
-  @ApiProperty()
-  reportDate: string;
-
-  @ApiProperty()
-  day: string;
-
-  @ApiProperty()
-  comments: string;
+export class FiberFormDto extends baseFormDto {
 
   @ApiProperty()
   table1: FiberTable1Dto[];
@@ -596,19 +578,8 @@ export class FiberFormDto {
   table3: FiberTable3Dto[];
 }
 
-export class PowerFormDto {
-  @ApiProperty()
-  names: string[];
-
-  @ApiProperty()
-  reportDate: string;
-
-  @ApiProperty()
-  day: string;
-
-  @ApiProperty()
-  comments: string;
-
+export class PowerFormDto extends baseFormDto {
+  
   @ApiProperty()
   diesel_generator_1: PowerTable1Dto;
 
@@ -677,6 +648,9 @@ export class DeleteFormByIdDto {
 
   @ApiProperty()
   role: string;
+
+  @ApiProperty()
+  updatedBy: string;
 }
 
 export class CreateDataFormDto {

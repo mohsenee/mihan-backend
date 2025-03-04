@@ -25,10 +25,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 export class FormsController {
   constructor(private readonly formsService: FormsService) {}
 
-  @Get('getAllFormSwitch')
-  getAllFormSwitch() {
-    return this.formsService.getAllFormSwitch();
-  }
 
   @UseGuards(JwtAuthGuard)
   @Get('getFormById')

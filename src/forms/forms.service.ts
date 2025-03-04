@@ -52,10 +52,6 @@ export class FormsService {
     return repoMap[role];
   }
 
-  async getAllFormSwitch() {
-    return await this.switchFormEntityRepository.find({});
-  }
-
   async getFormById(dto: GetFormByIdDto) {
     console.log(`getFormsById called: ${dto.formId}`);
     try {
@@ -79,6 +75,22 @@ export class FormsService {
     }
   }
 
+  async createForm(dto: CreateFormDto) {
+    console.log(`createForm called: ${dto.role}`);
+    const repository = this.getRepository(dto.role);
+    if (!repository) {
+      throw new Error(`Invalid role: ${dto.role}`);
+    }
+  
+    const form = await repository.create({
+      ...dto.form,
+      version: 1,
+      isExpired: false,
+    });
+    
+    return await repository.save(form);
+  }
+
   async updateFormById(id: string, dto: UpdateFormByIdDto) {
     console.log(`updateFormById called: ${dto.formId}`);
     try {
@@ -88,15 +100,23 @@ export class FormsService {
 
       const repository = this.getRepository(dto.role);
       let existingForm = await repository.findOne({
-        where: { _id: new ObjectId(dto.formId) },
+        where: { _id: new ObjectId(dto.formId), isExpired: false },
       });
 
       if (!existingForm) {
         throw new Error(`${dto.role} Form not found`);
       }
 
-      const updatedForm = { ...existingForm, ...dto.form };
-      return await repository.save(updatedForm);
+      existingForm.isExpired = true;
+      await repository.save(existingForm);
+
+      const newForm = await repository.create({
+        ...dto.form,
+        version: existingForm.version + 1,
+        isExpired: false,
+      });
+
+      return await repository.save(newForm);
     } catch (error) {
       console.error('Error in getFormById:', error.message);
       throw error; // Re-throw the error to handle it at a higher level
@@ -111,7 +131,12 @@ export class FormsService {
       }
 
       const repository = this.getRepository(dto.role);
-      return await repository.deleteOne({ _id: new ObjectId(dto.formId) });
+      const form =  await repository.findOne({ _id: new ObjectId(dto.formId), isExpired: false });
+      if (form) {
+        form.isExpired = true;
+        form.updatedBy = dto.updatedBy;
+        return await repository.save(form);
+      }
     } catch (error) {
       console.error('Error in getFormById:', error.message);
       throw error; // Re-throw the error to handle it at a higher level
@@ -191,7 +216,7 @@ export class FormsService {
             throw new Error(`Invalid role: ${dto.role}`);
         }
 
-        const forms = await repository.find({ where: {} });
+        const forms = await repository.find({ where: {isExpired: false} });
 
         if (!forms || forms.length === 0) {
             console.log('No reports found');
@@ -211,14 +236,5 @@ export class FormsService {
     }
 }
 
-async createForm(dto: CreateFormDto) {
-  console.log(`createForm called: ${dto.role}`);
-  const repository = this.getRepository(dto.role);
-  if (!repository) {
-    throw new Error(`Invalid role: ${dto.role}`);
-  }
-  
-  return await repository.save(dto.form);
-}
 
 }

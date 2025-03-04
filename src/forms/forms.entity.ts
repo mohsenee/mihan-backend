@@ -80,6 +80,22 @@ export class SwitchFormEntity extends BaseEntity {
   @ApiProperty()
   @Column()
   tm_mnt_port: string;
+
+  @ApiProperty()
+  @Column({ default: 1 })
+  version: number;
+
+  @ApiProperty()
+  @Column({ default: false })
+  isExpired: boolean;
+
+  @ApiProperty()
+  @Column()
+  createdBy: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  updatedBy: string;
 }
 
 @Entity()
@@ -159,6 +175,22 @@ export class MuxFormEntity extends BaseEntity {
   @ApiProperty()
   @Column()
   UPS: MuxTableDto;
+
+  @ApiProperty()
+  @Column({ default: 1 })
+  version: number;
+
+  @ApiProperty()
+  @Column({ default: false })
+  isExpired: boolean;
+
+  @ApiProperty()
+  @Column()
+  createdBy: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  updatedBy: string;
 }
 
 @Entity()
@@ -182,6 +214,22 @@ export class FacilitiesFormEntity extends BaseEntity {
   @ApiProperty()
   @Column()
   reports: FacilitiesReportsDto[];
+
+  @ApiProperty()
+  @Column({ default: 1 })
+  version: number;
+
+  @ApiProperty()
+  @Column({ default: false })
+  isExpired: boolean;
+
+  @ApiProperty()
+  @Column()
+  createdBy: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  updatedBy: string;
 
 }
 
@@ -214,6 +262,22 @@ export class FiberFormEntity extends BaseEntity {
   @ApiProperty()
   @Column()
   table3: FiberTable3Dto[];
+
+  @ApiProperty()
+  @Column({ default: 1 })
+  version: number;
+
+  @ApiProperty()
+  @Column({ default: false })
+  isExpired: boolean;
+
+  @ApiProperty()
+  @Column()
+  createdBy: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  updatedBy: string;
 
 }
 
@@ -291,5 +355,21 @@ export class PowerFormEntity extends BaseEntity {
   @ApiProperty()
   @Column()
   INVERTOR: PowerTable6Dto;
+
+  @ApiProperty()
+  @Column({ default: 1 })
+  version: number;
+
+  @ApiProperty()
+  @Column({ default: false })
+  isExpired: boolean;
+
+  @ApiProperty()
+  @Column()
+  createdBy: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  updatedBy: string;
 
 }
