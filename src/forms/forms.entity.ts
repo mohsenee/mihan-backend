@@ -373,3 +373,27 @@ export class PowerFormEntity extends BaseEntity {
   updatedBy: string;
 
 }
+
+@Entity()
+export class DailyFormMessagesEntity extends BaseEntity {
+
+  @ApiProperty()
+  @Column()
+  userId: string;
+
+  @ApiProperty()
+  @Column()
+  isExpired: boolean;
+
+  @ApiProperty()
+  @Column()
+  isSeen: boolean;
+
+  @ApiProperty()
+  @Column()
+  reportDate: string;
+
+  @ApiProperty()
+  @Column()
+  role: string;
+}

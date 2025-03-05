@@ -220,7 +220,6 @@ export class FiberTable3Dto {
 
   @ApiProperty()
   suggestions: string;
-
 }
 
 export class PowerTable1Dto {
@@ -259,7 +258,6 @@ export class PowerTable1Dto {
 
   @ApiProperty()
   descriptions: string;
-
 }
 
 export class PowerTable2Dto {
@@ -295,11 +293,9 @@ export class PowerTable2Dto {
 
   @ApiProperty()
   descriptions: string;
-
 }
 
 export class PowerTable3Dto {
-
   @ApiProperty()
   indicators_keys: string;
 
@@ -314,7 +310,6 @@ export class PowerTable3Dto {
 
   @ApiProperty()
   descriptions: string;
-
 }
 
 export class PowerTable4Dto {
@@ -359,7 +354,6 @@ export class PowerTable4Dto {
 
   @ApiProperty()
   descriptions: string;
-
 }
 
 export class PowerTable5Dto {
@@ -404,7 +398,6 @@ export class PowerTable5Dto {
 
   @ApiProperty()
   descriptions: string;
-
 }
 
 export class PowerTable6Dto {
@@ -434,10 +427,9 @@ export class PowerTable6Dto {
 
   @ApiProperty()
   descriptions: string;
-
 }
 
-export class baseFormDto{
+export class baseFormDto {
   @ApiProperty()
   names: string[];
 
@@ -464,7 +456,6 @@ export class baseFormDto{
 }
 
 export class SwitchFormDto extends baseFormDto {
-
   @ApiProperty()
   bandwidth: string;
 
@@ -512,7 +503,6 @@ export class SwitchFormDto extends baseFormDto {
 }
 
 export class MuxFormDto extends baseFormDto {
-
   @ApiProperty()
   dailyReportChecking: string;
 
@@ -557,17 +547,14 @@ export class MuxFormDto extends baseFormDto {
 
   @ApiProperty()
   UPS: MuxTableDto;
-
 }
 
 export class FacilitiesFormDto extends baseFormDto {
-
   @ApiProperty()
   reports: FacilitiesReportsDto[];
 }
 
 export class FiberFormDto extends baseFormDto {
-
   @ApiProperty()
   table1: FiberTable1Dto[];
 
@@ -579,7 +566,6 @@ export class FiberFormDto extends baseFormDto {
 }
 
 export class PowerFormDto extends baseFormDto {
-  
   @ApiProperty()
   diesel_generator_1: PowerTable1Dto;
 
@@ -639,7 +625,12 @@ export class UpdateFormByIdDto {
   role: string;
 
   @ApiProperty()
-  form: SwitchFormDto | PowerFormDto | FiberFormDto | FacilitiesFormDto | MuxFormDto;
+  form:
+    | SwitchFormDto
+    | PowerFormDto
+    | FiberFormDto
+    | FacilitiesFormDto
+    | MuxFormDto;
 }
 
 export class DeleteFormByIdDto {
@@ -718,6 +709,32 @@ export class CreateFormDto {
   role: string;
 
   @ApiProperty()
-  form: SwitchFormDto | PowerFormDto | FiberFormDto | FacilitiesFormDto | MuxFormDto;
+  form:
+    | SwitchFormDto
+    | PowerFormDto
+    | FiberFormDto
+    | FacilitiesFormDto
+    | MuxFormDto;
 }
 
+export class DailyFormMessagesDto {
+  @ApiProperty()
+  userId: string;
+
+  @ApiProperty()
+  isExpired: boolean;
+
+  @ApiProperty()
+  isSeen: boolean;
+
+  @ApiProperty()
+  reportDate: string;
+
+  @ApiProperty()
+  role: string;
+}
+
+export class GetMessageByUserIdDto {
+  @ApiProperty()
+  userId: string;
+}

@@ -12,13 +12,13 @@ import {
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 import {
-  SwitchFormDto,
   GetFormByIdDto,
   DeleteFormByIdDto,
   GetFormsByRoleDto,
   UpdateFormByIdDto,
   CreateFormDto,
   GetFormsByRoleAndDateDto,
+  GetMessageByUserIdDto,
 } from './forms.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
@@ -80,6 +80,16 @@ export class FormsController {
   @Post('createForm')
   async createForm(@Body() body: CreateFormDto) {
     return this.formsService.createForm(body);
+  }
+
+  @Get('checkFormsAndCreateMessage')
+  checkFormsAndCreateMessage() {
+    return this.formsService.checkFormsAndCreateMessage();
+  }
+
+  @Get('getMessageByUserId')
+  getMessageByUserId(@Query() dto: GetMessageByUserIdDto) {
+    return this.formsService.getMessageByUserId(dto);
   }
 
 }

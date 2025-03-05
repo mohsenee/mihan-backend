@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import {
   CreateFormDto,
+  DailyFormMessagesDto,
   DeleteFormByIdDto,
   GetFormByIdDto,
   GetFormsByRoleAndDateDto,
   GetFormsByRoleDto,
   GetFormsByRoleResultDto,
+  GetMessageByUserIdDto,
   UpdateFormByIdDto,
   getBandwidthDto,
   getTempretureHumidityDto,
@@ -18,13 +20,17 @@ import {
   FacilitiesFormEntity,
   FiberFormEntity,
   PowerFormEntity,
+  DailyFormMessagesEntity,
 } from './forms.entity';
 import { MongoRepository } from 'typeorm';
+import { UserEntity } from 'src/users/users.entity';
 const mongoose = require('mongoose');
 
 @Injectable()
 export class FormsService {
   constructor(
+    @InjectRepository(UserEntity)
+    private userEntityRepository: MongoRepository<UserEntity>,
     @InjectRepository(SwitchFormEntity)
     private switchFormEntityRepository: MongoRepository<SwitchFormEntity>,
     @InjectRepository(MuxFormEntity)
@@ -35,6 +41,8 @@ export class FormsService {
     private fiberFormEntityRepository: MongoRepository<FiberFormEntity>,
     @InjectRepository(PowerFormEntity)
     private powerFormEntityRepository: MongoRepository<PowerFormEntity>,
+    @InjectRepository(DailyFormMessagesEntity)
+    private dailyFormMessagesRepository: MongoRepository<DailyFormMessagesEntity>,
   ) {}
 
   private getRepository(role: string) {
@@ -88,6 +96,14 @@ export class FormsService {
       version: 1,
       isExpired: false,
     });
+
+    const message = await this.dailyFormMessagesRepository.findOne({
+      where: { isExpired: false, role: dto.role },
+    });
+    if (message) {
+      message.isExpired = true;
+      await this.dailyFormMessagesRepository.save(message);
+    }
 
     return await repository.save(form);
   }
@@ -243,20 +259,97 @@ export class FormsService {
   async getFormsByRoleAndDate(dto: GetFormsByRoleAndDateDto) {
     console.log(`getFormsByRoleAndDate called: ${dto.role} ${dto.reportDate}`);
     try {
-        const repository = this.getRepository(dto.role);
-        if (!repository) {
-            throw new Error(`Invalid role: ${dto.role}`);
-        }
+      const repository = this.getRepository(dto.role);
+      if (!repository) {
+        throw new Error(`Invalid role: ${dto.role}`);
+      }
 
-        const forms = await repository.find({ where: {isExpired: false, reportDate: dto.reportDate} });
+      const forms = await repository.find({
+        where: { isExpired: false, reportDate: dto.reportDate },
+      });
 
-        if (!forms || forms.length === 0) {
-            console.log('No reports found');
-            return false;
-        }else return true
+      if (!forms || forms.length === 0) {
+        console.log('No reports found');
+        return false;
+      } else return true;
     } catch (error) {
-        console.error('Error in getFormsByRole:', error.message);
-        throw error;
+      console.error('Error in getFormsByRole:', error.message);
+      throw error;
     }
-}
+  }
+
+  async checkFormsAndCreateMessage(): Promise<void> {
+    const date = new Date();
+
+    const previousDate = new Date(date);
+    previousDate.setDate(date.getDate() - 1);
+
+    const yesterday = new Intl.DateTimeFormat('fa-IR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(previousDate);
+
+    console.log('Yesterday:', yesterday);
+
+    const repoMap = {
+      Switch: this.switchFormEntityRepository,
+      Mux: this.muxFormEntityRepository,
+      Fiber: this.fiberFormEntityRepository,
+      Facilities: this.facilitiesFormEntityRepository,
+      Power: this.powerFormEntityRepository,
+    };
+
+    for (const [repoName, repo] of Object.entries(repoMap)) {
+      const form = await repo.findOne({
+        where: { isExpired: false, reportDate: yesterday },
+      });
+      if (!form) {
+        const users = await this.userEntityRepository.find({
+          where: {
+            $or: [
+              { access: { $in: [1, 2] } }, // If access is 1 or 2
+              {
+                $and: [
+                  { access: { $in: [3, 4] } }, // If access is 3 or 4
+                  { role: repoName }, // AND role must be "mux"
+                ],
+              },
+            ],
+          },
+          select: ['_id'], // Only select userId field
+        });
+
+        // Map only userId fields into an array
+        const userIds = users.map((user) => user.id);
+
+        console.log(repoName);
+
+        console.log(userIds);
+        console.log('*********************');
+        for (let userId of userIds) {
+          let message = {} as DailyFormMessagesDto;
+          message.userId = userId;
+          message.isExpired = false;
+          message.isSeen = false;
+          message.reportDate = yesterday;
+          message.role = repoName;
+
+          console.log(message)
+
+          await this.dailyFormMessagesRepository.save(message);
+        }
+      }
+    }
+  }
+
+  async getMessageByUserId(dto: GetMessageByUserIdDto) {
+
+    const messages = await this.dailyFormMessagesRepository.find({
+      where: { userId: new ObjectId(dto.userId), isExpired: false },
+    })
+
+    return messages;
+    
+  }
 }
