@@ -9,7 +9,7 @@ import {
 } from './users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './users.entity';
-import { MongoRepository } from 'typeorm';
+import { In, MongoRepository } from 'typeorm';
 import { ObjectId } from 'mongodb';
 import * as bcrypt from 'bcrypt';
 const mongoose = require('mongoose');
@@ -107,6 +107,7 @@ export class UsersService {
       const users = await this.userEntityRepository.find({
         where: {
           role: dto.role,
+          access: { $in: [4, 5] },
         },
       });
 

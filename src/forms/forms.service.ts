@@ -97,12 +97,14 @@ export class FormsService {
       isExpired: false,
     });
 
-    const message = await this.dailyFormMessagesRepository.findOne({
-      where: { isExpired: false, role: dto.role },
+    const messages = await this.dailyFormMessagesRepository.find({
+      where: { isExpired: false, role: dto.role, reportDate: form.reportDate },
     });
-    if (message) {
-      message.isExpired = true;
-      await this.dailyFormMessagesRepository.save(message);
+    if (messages.length > 0) {
+      for (let message of messages) {
+        message.isExpired = true;
+        await this.dailyFormMessagesRepository.save(message);
+      }
     }
 
     return await repository.save(form);
@@ -335,7 +337,7 @@ export class FormsService {
           message.reportDate = yesterday;
           message.role = repoName;
 
-          console.log(message)
+          console.log(message);
 
           await this.dailyFormMessagesRepository.save(message);
         }
@@ -344,12 +346,10 @@ export class FormsService {
   }
 
   async getMessageByUserId(dto: GetMessageByUserIdDto) {
-
     const messages = await this.dailyFormMessagesRepository.find({
       where: { userId: dto.userId, isExpired: false },
-    })
+    });
 
     return messages;
-    
   }
 }
