@@ -329,7 +329,7 @@ export class FormsService {
         console.log('*********************');
         for (let userId of userIds) {
           let message = {} as DailyFormMessagesDto;
-          message.userId = userId;
+          message.userId = userId.toString();
           message.isExpired = false;
           message.isSeen = false;
           message.reportDate = yesterday;
@@ -346,7 +346,7 @@ export class FormsService {
   async getMessageByUserId(dto: GetMessageByUserIdDto) {
 
     const messages = await this.dailyFormMessagesRepository.find({
-      where: { userId: new ObjectId(dto.userId), isExpired: false },
+      where: { userId: dto.userId, isExpired: false },
     })
 
     return messages;
