@@ -346,10 +346,15 @@ export class FormsService {
   }
 
   async getMessageByUserId(dto: GetMessageByUserIdDto) {
-    const messages = await this.dailyFormMessagesRepository.find({
+    const page = parseInt(dto.page.toString(), 10);
+    const limit = parseInt(dto.limit.toString(), 10);
+    const [messages, total] = await this.dailyFormMessagesRepository.findAndCount({
       where: { userId: dto.userId, isExpired: false },
+      take: limit,  // Limit results per page
+      skip: (page - 1) * limit,  // Skip previous pages
+      order: { createdAt: "DESC" } // Optional: Sort by newest first
     });
-
-    return messages;
+  
+    return { messages, total };
   }
 }

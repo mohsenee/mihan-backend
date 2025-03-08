@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import exp from 'constants';
+import { IsInt, IsOptional, Min } from 'class-validator';
 
 export class MuxTableDto {
   @ApiProperty()
@@ -737,4 +737,17 @@ export class DailyFormMessagesDto {
 export class GetMessageByUserIdDto {
   @ApiProperty()
   userId: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  page: number = 1;  // Default value for page is 1
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  limit: number = 10;  // Default value for limit is 10
 }
+
